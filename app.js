@@ -2,7 +2,7 @@
 
 var token = '197402890:AAFYbn7ZGjPUAiL2mIYKqSgsSLsLZUbeHv0'
 var bot = new TelegramBot(token, {polling: false})
-var answers = ["лол", "всегда так делаю", "SUQA", "ОН ПЕС НОВЕРНОЕ", "че творится тоооо", "лол бля", "проиграл", "сасают пускай", "збс истории", "бля", "ебаные вазы", "пиздец какой", "чот лол ваще", "здорово у них получается", "ох\nсмешно", "хехе", "да ето так", "все так", "жиза", "жзнн", "жизненно", "ну и истории", "там на хохлятском что ли?", "все ебанулись", "пощаади", "ссУКАа", "крепко поясняет", "крепко"]
+var answers = ["лол", "всегда так делаю", "SUQA", "вот он пес", "че творится тоооо", "лол бля", "проиграл", "сасают пускай", "збс истории", "бля", "ебаные вазы", "пиздец какой", "чот лол ваще", "здорово у них получается", "ох\nсмешно", "хехе", "да ето так", "все так", "жиза", "жзнн", "жизненно", "ну и истории", "там на хохлятском что ли?", "все ебанулись", "пощаади", "ссУКАа", "крепко поясняет", "крепко"]
 var stickers = ["BQADAgADDgAD0lqIAS4_Dn8BQpYIAg", 'BQADAgADEwAD0lqIAZPkeV9UWs1eAg', 'BQADAgADFwAD0lqIAW6NhqV3Oc1XAg', 'BQADAgADKQAD8IE4BxfpeSzDpf7xAg', 'BQADAgADaSEAAlOx9wO2b3V0S-YJQQI', 'BQADAgADwQAD8IE4B7rHpeqamcA4Ag']
 
 function kobaResponse(msg) {
@@ -12,7 +12,8 @@ function kobaResponse(msg) {
 		&& (msg.text.lastIndexOf('http')!=-1 
 			|| msg.text.toUpperCase().lastIndexOf("КОБЫЧ")!=-1
 			|| msg.text.toUpperCase().lastIndexOf("КОБА")!=-1
-			|| msg.text.toUpperCase().lastIndexOf("ЕБАТЬ")!=-1)) || msg.photo) {
+			|| msg.text.toUpperCase().lastIndexOf("КОБЕ")!=-1
+			|| msg.text.toUpperCase().lastIndexOf("ЕБАТЬ")!=-1)) || msg.photo || msg.voice) {
 		var rnd = Math.random() * 100
 		if (rnd < 70) {
 			var rndIdx = Math.random() * answers.length
@@ -37,6 +38,8 @@ setInterval(function() {
 	console.log("offset = " + offset)	
 	var updatesPromise = bot.getUpdates(1, 10, offset)
 	updatesPromise.then(function(data) {
+		console.log("DATA:")
+		console.log(data)
 		var unique = []
 		for (var i = 0; i < data.length; i++) {
 			var ids = unique.map(function(e){return e.message.message_id})
@@ -51,4 +54,3 @@ setInterval(function() {
 		}
 	})
 }, 5000)
-
