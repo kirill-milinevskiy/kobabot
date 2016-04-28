@@ -2,7 +2,11 @@
 var VKApi = require('node-vkapi')
 var https = require('https')
 var VK = new VKApi()
-//var googleImages = require('google-images') //https://github.com/vdemedes/google-images#set-up-google-custom-search-engine
+
+var googleImages = require('google-images') //https://github.com/vdemedes/google-images#set-up-google-custom-search-engine
+var cseId = '011789341044406885438:jrc8evcrftg' //cx param
+var googleApiKey = 'AIzaSyCPB1_pPKab6es9a16-ZMVoxYFXEhjDr5s' //key param
+var giClient = googleImages(cseId, googleApiKey)
 
 var http = require('http')
 
@@ -11,15 +15,16 @@ var bot = new TelegramBot(token, {polling: false})
 var answers = ["лол", "всегда так делаю", "SUQA", "вот он пес", "че творится тоооо", "лол бля", "проиграл", "сасают пускай", "збс истории", "бля", "ебаные вазы", "пиздец какой", "чот лол ваще", "здорово у них получается", "ох\nсмешно", "хехе", "да ето так", "все так", "жиза", "жзнн", "жизненно", "ну и истории", "там на хохлятском что ли?", "все ебанулись", "пощаади", "ссУКАа", "крепко поясняет", "крепко"]
 var stickers = ["BQADAgADDgAD0lqIAS4_Dn8BQpYIAg", 'BQADAgADEwAD0lqIAZPkeV9UWs1eAg', 'BQADAgADFwAD0lqIAW6NhqV3Oc1XAg', 'BQADAgADKQAD8IE4BxfpeSzDpf7xAg', 'BQADAgADaSEAAlOx9wO2b3V0S-YJQQI', 'BQADAgADwQAD8IE4B7rHpeqamcA4Ag']
 
-var cseId = '011789341044406885438:jrc8evcrftg' //cx param
-var googleApiKey = 'AIzaSyCPB1_pPKab6es9a16-ZMVoxYFXEhjDr5s' //key param
 var maxBayanCount = 10
+var okKobaResponse = "Так бля, значит:\n- Поиск: кобыч найди.\n- Пивко: просто упомяни пивко.\n- Баян: спроси у меня баян. Можешь сразу пачку.\nОстальное и так поймешь."
 
 function kobaResponse(msg) {
     var chatId = msg.chat.id
 	console.log(msg)
 	if (msg.text) {
-		if (searchRequest(msg.text)) kobaFind(chatId, msg.text)
+		if (okKoba(msg.text)) {
+			bot.sendMessage(chatId, okKobaResponse)
+		} else if (searchRequest(msg.text)) kobaFind(chatId, msg.text)
 		else if (bayanRequest(msg.text)) {	
 			if (bayanHeap(msg.text)) {
 				console.log("heap")
@@ -31,12 +36,23 @@ function kobaResponse(msg) {
 		} else if (randomMessage(msg)) {
 			postResponse(chatId)
 		}
+		if (beerRequest(msg.text)) {
+			postBeer(chatId)
+		}
 	} else if (msg.sticker) {
 		var rndIdx = Math.random() * stickers.length
 		bot.sendSticker(chatId, stickers[Math.floor(rndIdx)])
 	} else if (msg.photo || msg.voice) {
 		postResponse(chatId)
 	}
+}
+
+function beerRequest(text) {
+	return (text.match(/.*[Пп][Ии][Вв][Кк]*(О|о|А|а|У|у)/))
+}
+
+function okKoba(text) {
+	return (text.match(/((Ок)+|(ок)+),* (К|к)обыч/))
 }
 
 function bayanHeap(text) {
@@ -111,11 +127,15 @@ function kobaFind(chatId, text) {
 	else bot.sendMessage(chatId, 'чет непонятна')
 }
 
+function postBeer(chatId) {
+	giClient.search('Пиво', {page: Math.floor(Math.random()*10)}).then((images) => {
+		bot.sendMessage(chatId, images[Math.floor(Math.random()*images.length)].url)
+	})
+}
+
 function getOffset() {
 	var updatesPromise = bot.getUpdates(1, 10)
 	updatesPromise.then((data) => {
-		console.log("data: ")
-		console.log(data)
 		offset = data && data.length ? data[data.length-1].update_id+1 : 0
 	})
 }
