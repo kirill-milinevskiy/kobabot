@@ -1,4 +1,10 @@
 ﻿var TelegramBot = require('node-telegram-bot-api')
+var dbModule = require('./db/dbmodule.js')
+var db = new dbModule()
+
+console.log(db)
+
+db.fillBayans()
 
 var VKApi = require('node-vkapi')
 var VK = new VKApi()
@@ -21,7 +27,7 @@ function kobaResponse(msg) {
 	console.log(msg)
 	if (msg.text) {
 		if (okKoba(msg.text)) {
-			bot.sendMessage(chatId, okKobaResponse)
+            bot.sendMessage(chatId, okKobaResponse)
 		} else if (searchRequest(msg.text)) kobaFind(chatId, msg.text)
 		else if (bayanRequest(msg.text)) {
 			if (bayanHeap(msg.text)) {
@@ -105,6 +111,19 @@ function postBayan(chatId, count) {
 		bot.sendMessage(chatId, "бля кротаны, чет не нашел")
 	})
 }
+// 
+// function postBayan(chatId, count) {
+// 	count = count ? count : 1
+// 	if (count > maxBayanCount) {
+// 		bot.sendMessage(chatId, "ты че охуел? че так дохуя то?")
+// 		return
+// 	}
+// 	bot.sendMessage(chatId, "ща")
+//     var bayans = db.getBayans(count)
+//     bayans.forEach(bayan => {
+//         bot.sendMessage(chatId, bayan)
+//     })
+// }
 
 function postResponse(chatId) {
 	var rnd = Math.random() * 100
