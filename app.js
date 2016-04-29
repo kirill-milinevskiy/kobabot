@@ -1,4 +1,4 @@
-﻿var TelegramBot = require('node-telegram-bot-api') 
+﻿var TelegramBot = require('node-telegram-bot-api')
 var VKApi = require('node-vkapi')
 var https = require('https')
 var VK = new VKApi()
@@ -25,13 +25,13 @@ function kobaResponse(msg) {
 		if (okKoba(msg.text)) {
 			bot.sendMessage(chatId, okKobaResponse)
 		} else if (searchRequest(msg.text)) kobaFind(chatId, msg.text)
-		else if (bayanRequest(msg.text)) {	
+		else if (bayanRequest(msg.text)) {
 			if (bayanHeap(msg.text)) {
 				console.log("heap")
 				var match = msg.text.match(/\d+/)
 				var count = match ? match[0] : 3
 				postBayan(chatId, count)
-			} 
+			}
 			else postBayan(chatId)
 		} else if (randomMessage(msg)) {
 			postResponse(chatId)
@@ -60,15 +60,15 @@ function bayanHeap(text) {
 }
 
 function bayanRequest(text) {
-	return (text.toUpperCase().lastIndexOf("КОБ") != -1 
-		&& (text.toUpperCase().lastIndexOf("БАЯН") != -1 
+	return (text.toUpperCase().lastIndexOf("КОБ") != -1
+		&& (text.toUpperCase().lastIndexOf("БАЯН") != -1
 			|| text.toUpperCase().lastIndexOf("БАЯНЕЦ") != -1
 			|| text.toUpperCase().lastIndexOf("БАЯНЦА") != -1
 			|| text.toUpperCase().lastIndexOf("КАРТИНК") != -1))
 }
 
 function randomMessage(msg) {
-	return (msg.text.lastIndexOf('http') != -1 
+	return (msg.text.lastIndexOf('http') != -1
 		|| msg.text.toUpperCase().lastIndexOf("КОБЫЧ") != -1
 		|| msg.text.toUpperCase().lastIndexOf("КОБА") != -1
 		|| msg.text.toUpperCase().lastIndexOf("КОБЕ") != -1
@@ -112,7 +112,7 @@ function postResponse(chatId) {
 	var rnd = Math.random() * 100
 	if (rnd < 70) {
 		var rndIdx = Math.random() * answers.length
-		bot.sendMessage(chatId, answers[Math.floor(rndIdx)])			
+		bot.sendMessage(chatId, answers[Math.floor(rndIdx)])
 	} else if (rnd >= 70 && rnd < 97) {
 		var rndIdx = Math.random() * stickers.length
 		bot.sendSticker(chatId, stickers[Math.floor(rndIdx)])
@@ -121,7 +121,7 @@ function postResponse(chatId) {
 	}
 }
 
-function kobaFind(chatId, text) {	
+function kobaFind(chatId, text) {
 	var query = text.replace(/.*\n*[Н|н]айди /, "").replace(/\s/g, "+")
 	if (query) bot.sendMessage(chatId, 'Гугл отменили чтоль? https://google.gik-team.com/?q=' + query)
 	else bot.sendMessage(chatId, 'чет непонятна')
@@ -143,8 +143,9 @@ function getOffset() {
 // Response-part
 var offset = getOffset()
 setInterval(function() {
-	console.log("start")	
-	console.log("offset = " + offset)	
+	console.log(new Date())
+	console.log("start")
+	console.log("offset = " + offset)
 	var updatesPromise = bot.getUpdates(1, 10, offset)
 	updatesPromise.then((data) => {
 		var unique = []
@@ -152,7 +153,7 @@ setInterval(function() {
 			var ids = unique.map(e => e.message.message_id)
 			if (ids.lastIndexOf(data[i].message.message_id) == -1)
 				unique.push(data[i])
-		}		
+		}
 		console.log("-----------------------")
 		for (var i = 0; i < unique.length; i++) {
 			if (i == unique.length - 1) offset = unique[i].update_id+1
