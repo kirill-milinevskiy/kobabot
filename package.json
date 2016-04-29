@@ -1,0 +1,32 @@
+{
+  "name": "kobabot-package",
+  "version": "0.0.1",
+  "description": "telegram kobabot",
+  "main": "app.js",
+  "dependencies": {
+    "google-images": "^1.0.0",
+    "nedb": "^1.8.0",
+    "node-telegram-bot-api": "^0.21.1",
+    "node-vkapi": "^1.2.7"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kirill-milinevskiy/kobabot.git"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "koba",
+    "kobytch"
+  ],
+  "author": "Kirill Milinevskiy",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kirill-milinevskiy/kobabot/issues"
+  },
+  "homepage": "https://github.com/kirill-milinevskiy/kobabot#readme"
+}

@@ -1,14 +1,12 @@
 ﻿var TelegramBot = require('node-telegram-bot-api')
+
 var VKApi = require('node-vkapi')
-var https = require('https')
 var VK = new VKApi()
 
 var googleImages = require('google-images') //https://github.com/vdemedes/google-images#set-up-google-custom-search-engine
 var cseId = '011789341044406885438:jrc8evcrftg' //cx param
 var googleApiKey = 'AIzaSyCPB1_pPKab6es9a16-ZMVoxYFXEhjDr5s' //key param
 var giClient = googleImages(cseId, googleApiKey)
-
-var http = require('http')
 
 var token = '197402890:AAFYbn7ZGjPUAiL2mIYKqSgsSLsLZUbeHv0'
 var bot = new TelegramBot(token, {polling: false})
