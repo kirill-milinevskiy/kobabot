@@ -2,10 +2,6 @@
 var dbModule = require('./db/dbmodule.js')
 var db = new dbModule()
 
-console.log(db)
-
-db.fillBayans()
-
 var VKApi = require('node-vkapi')
 var VK = new VKApi()
 
@@ -24,25 +20,21 @@ var okKobaResponse = "Так бля, значит:\n- Поиск: кобыч н�
 
 function kobaResponse(msg) {
     var chatId = msg.chat.id
-	console.log(msg)
+    if (addedToChat(msg)) {
+        sayHello(chatId)
+    }
 	if (msg.text) {
-		if (okKoba(msg.text)) {
-            bot.sendMessage(chatId, okKobaResponse)
-		} else if (searchRequest(msg.text)) kobaFind(chatId, msg.text)
-		else if (bayanRequest(msg.text)) {
+        if (beerRequest(msg.text)) postBeer(chatId)
+		if (okKoba(msg.text)) bot.sendMessage(chatId, okKobaResponse)
+		else if (searchRequest(msg.text)) kobaFind(chatId, msg.text)
+        else if (bayanRequest(msg.text)) {
 			if (bayanHeap(msg.text)) {
-				console.log("heap")
 				var match = msg.text.match(/\d+/)
 				var count = match ? match[0] : 3
-				postBayan(chatId, count)
+				postBayan2(chatId, count)
 			}
-			else postBayan(chatId)
-		} else if (randomMessage(msg)) {
-			postResponse(chatId)
-		}
-		if (beerRequest(msg.text)) {
-			postBeer(chatId)
-		}
+			else postBayan2(chatId)
+		} else if (randomMessage(msg)) postResponse(chatId)
 	} else if (msg.sticker) {
 		var rndIdx = Math.random() * stickers.length
 		bot.sendSticker(chatId, stickers[Math.floor(rndIdx)])
@@ -64,11 +56,8 @@ function bayanHeap(text) {
 }
 
 function bayanRequest(text) {
-	return (text.toUpperCase().lastIndexOf("КОБ") != -1
-		&& (text.toUpperCase().lastIndexOf("БАЯН") != -1
-			|| text.toUpperCase().lastIndexOf("БАЯНЕЦ") != -1
-			|| text.toUpperCase().lastIndexOf("БАЯНЦА") != -1
-			|| text.toUpperCase().lastIndexOf("КАРТИНК") != -1))
+	return ((text.toUpperCase().lastIndexOf("КОБ") != -1 || text.toUpperCase().lastIndexOf("ЕЩЕ") != -1)
+		      && (text.toUpperCase().lastIndexOf("БАЯН") != -1 || text.toUpperCase().lastIndexOf("КАРТИНК") != -1))
 }
 
 function randomMessage(msg) {
@@ -111,19 +100,22 @@ function postBayan(chatId, count) {
 		bot.sendMessage(chatId, "бля кротаны, чет не нашел")
 	})
 }
-// 
-// function postBayan(chatId, count) {
-// 	count = count ? count : 1
-// 	if (count > maxBayanCount) {
-// 		bot.sendMessage(chatId, "ты че охуел? че так дохуя то?")
-// 		return
-// 	}
-// 	bot.sendMessage(chatId, "ща")
-//     var bayans = db.getBayans(count)
-//     bayans.forEach(bayan => {
-//         bot.sendMessage(chatId, bayan)
-//     })
-// }
+
+function postBayan2(chatId, count) {
+	count = count ? count : 1
+	if (count > maxBayanCount) {
+		bot.sendMessage(chatId, "ты че охуел? че так дохуя то?")
+		return
+	}
+	bot.sendMessage(chatId, "ща")
+    db.getBayans(count, bayans => {
+        bayans.forEach(bayan => {
+            bot.sendMessage(chatId, bayan)
+        })
+        db.setBayansPosted(bayans)
+    })
+
+}
 
 function postResponse(chatId) {
 	var rnd = Math.random() * 100
@@ -150,32 +142,43 @@ function postBeer(chatId) {
 	})
 }
 
-function getOffset() {
-	var updatesPromise = bot.getUpdates(1, 10)
-	updatesPromise.then((data) => {
-		offset = data && data.length ? data[data.length-1].update_id+1 : 0
-	})
+function addedToChat(msg) {
+    return msg.new_chat_participant && msg.new_chat_participant.username == "KeikkBot"
 }
 
-// Response-part
-var offset = getOffset()
-setInterval(function() {
-	console.log(new Date())
-	console.log("start")
-	console.log("offset = " + offset)
-	var updatesPromise = bot.getUpdates(1, 10, offset)
-	updatesPromise.then((data) => {
-		var unique = []
-		for (var i = 0; i < data.length; i++) {
-			var ids = unique.map(e => e.message.message_id)
-			if (ids.lastIndexOf(data[i].message.message_id) == -1)
-				unique.push(data[i])
-		}
-		console.log("-----------------------")
-		for (var i = 0; i < unique.length; i++) {
-			if (i == unique.length - 1) offset = unique[i].update_id+1
-			console.log(unique[i])
-			kobaResponse(unique[i].message)
-		}
-	})
-}, 5000)
+function sayHello(chatId) {
+    bot.sendMessage(chatId, "вечер в хату жизнь ворам")
+}
+
+function sayAllIsOver(chatId) {
+    bot.sendMessage(chatId, 'пиздос')
+}
+
+function getOffsetAndStart(offsetData) {
+    var offset = offsetData && offsetData.length ? offsetData[offsetData.length-1].update_id + 1 : 0
+
+    setInterval(function() {
+    	console.log(new Date())
+    	console.log("start")
+    	console.log("offset = " + offset)
+    	var updatesPromise = bot.getUpdates(1, 10, offset)
+    	updatesPromise.then(data => {
+    		var unique = []
+    		for (var i = 0; i < data.length; i++) {
+    			var ids = unique.map(e => e.message.message_id)
+    			if (ids.lastIndexOf(data[i].message.message_id) == -1)
+    				unique.push(data[i])
+    		}
+    		console.log("-----------------------")
+    		for (var i = 0; i < unique.length; i++) {
+    			if (i == unique.length - 1) offset = unique[i].update_id+1
+    			console.log(unique[i])
+    			kobaResponse(unique[i].message)
+    		}
+    	})
+    }, 5000)
+}
+
+db.fillBayans().then(res => {
+    bot.getUpdates(1,10).then(getOffsetAndStart)
+})
