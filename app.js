@@ -12,7 +12,8 @@ var giClient = googleImages(cseId, googleApiKey)
 
 var token = '197402890:AAFYbn7ZGjPUAiL2mIYKqSgsSLsLZUbeHv0'
 var bot = new TelegramBot(token, {polling: false})
-var answers = ["лол", "всегда так делаю", "SUQA", "вот он пес", "че творится тоооо", "лол бля", "проиграл", "сасают пускай", "збс истории", "бля", "ебаные вазы", "пиздец какой", "чот лол ваще", "здорово у них получается", "ох\nсмешно", "хехе", "да ето так", "все так", "жиза", "жзнн", "жизненно", "ну и истории", "там на хохлятском что ли?", "все ебанулись", "пощаади", "ссУКАа", "крепко поясняет", "крепко"]
+var answers = ["лол", "всегда так делаю", "SUQA", "вот он пес", "че творится тоооо", "лол бля", "проиграл", "сасают пускай", "збс истории", "бля", "ебаные вазы", "пиздец какой", "чот лол ваще", "здорово у них получается", "ох\nсмешно", "хехе", "да ето так", "все так", "жиза",
+    "жзнн", "жизненно", "ну и истории", "там на хохлятском что ли?", "все ебанулись", "пощаади", "ссУКАа", "крепко поясняет", "крепко", "хехе", "хехе", "хехе", "хехе", "хехе", "хехе", "хехе", "хехе", "хехе", "хехе", "хехе"]
 var stickers = ["BQADAgADDgAD0lqIAS4_Dn8BQpYIAg", 'BQADAgADEwAD0lqIAZPkeV9UWs1eAg', 'BQADAgADFwAD0lqIAW6NhqV3Oc1XAg', 'BQADAgADKQAD8IE4BxfpeSzDpf7xAg', 'BQADAgADaSEAAlOx9wO2b3V0S-YJQQI', 'BQADAgADwQAD8IE4B7rHpeqamcA4Ag']
 
 var maxBayanCount = 10
@@ -161,12 +162,12 @@ function getOffsetAndStart(offsetData) {
     	console.log(new Date())
     	console.log("start")
     	console.log("offset = " + offset)
-    	var updatesPromise = bot.getUpdates(1, 10, offset)
+    	var updatesPromise = bot.getUpdates(1, 99, offset)
     	updatesPromise.then(data => {
     		var unique = []
     		for (var i = 0; i < data.length; i++) {
     			var ids = unique.map(e => e.message.message_id)
-    			if (ids.lastIndexOf(data[i].message.message_id) == -1)
+    			if (data[i].message && ids.lastIndexOf(data[i].message.message_id) == -1)
     				unique.push(data[i])
     		}
     		console.log("-----------------------")
@@ -180,5 +181,5 @@ function getOffsetAndStart(offsetData) {
 }
 
 db.fillBayans().then(res => {
-    bot.getUpdates(1,10).then(getOffsetAndStart)
+    bot.getUpdates(1,99).then(getOffsetAndStart)
 })
