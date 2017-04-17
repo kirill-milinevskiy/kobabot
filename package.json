@@ -28,5 +28,8 @@
   "bugs": {
     "url": "https://github.com/kirill-milinevskiy/kobabot/issues"
   },
-  "homepage": "https://github.com/kirill-milinevskiy/kobabot#readme"
+  "homepage": "https://github.com/kirill-milinevskiy/kobabot#readme",
+  "scripts": {
+    "start": "node app"
+  }
 }
